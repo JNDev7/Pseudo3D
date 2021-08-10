@@ -5,49 +5,53 @@ import xyz.jeremynoesen.pseudo3d.scene.util.Vector;
 import java.util.Objects;
 
 /**
- * camera used to determine where to render a scene
+ * Camera used to determine where and how to render a Scene
  *
  * @author Jeremy Noesen
  */
 public class Camera {
-    
+
     /**
-     * field of view in degrees, how wide the camera can see
+     * Field of view of the Camera in degrees
      */
     private float fieldOfView;
-    
+
     /**
-     * how far away the camera is able to render in grid units
+     * How far away the Camera is able to render in grid units
      */
     private float viewDistance;
-    
+
     /**
-     * camera sensor size. rendered scenes will scale to fit a square with side length of sensorSize pixels
+     * Camera sensor size
+     * <p>
+     * Rendered Scenes will scale to fit a square with side length of sensorSize pixels
      */
     private float sensorSize;
-    
+
     /**
-     * camera zoom, will scale rendered image by this amount
+     * Camera zoom
+     * <p>
+     * Scales the rendered image by this amount
      */
     private float zoom;
-    
+
     /**
-     * rotation of the camera in degrees, counter-clock-wise
+     * Rotation of the Camera in degrees counter-clock-wise
      */
     private float rotation;
-    
+
     /**
-     * 3D position of camera in scene in grid units
+     * 3D position of the Camera in the Scene in grid units
      */
     private Vector position;
-    
+
     /**
-     * 2D position of camera in window in pixels
+     * 2D position offset of the Camera from the center of the window in pixels
      */
     private Vector offset;
-    
+
     /**
-     * creates a new default camera
+     * Create a new default Camera
      */
     public Camera() {
         position = new Vector();
@@ -58,17 +62,17 @@ public class Camera {
         rotation = 0;
         offset = new Vector();
     }
-    
+
     /**
-     * constructs a new camera with set position, sensor res, and field of view
+     * Create a new Camera with set position, sensor size, field of view, view distance, zoom, rotation, and offset
      *
-     * @param position     camera position in scene
-     * @param sensorSize   camera sensor size
-     * @param fieldOfView  field of view in degrees
-     * @param viewDistance z distance camera is able to see in grid units
-     * @param zoom         camera zoom, scales render
-     * @param rotation     rotation of camera in degrees
-     * @param offset       position of camera in window
+     * @param position     Camera position in Scene
+     * @param sensorSize   Camera sensor size
+     * @param fieldOfView  Field of view in degrees
+     * @param viewDistance View distance in grid units
+     * @param zoom         Camera zoom
+     * @param rotation     Rotation of Camera in degrees
+     * @param offset       Position of Camera in window
      */
     public Camera(Vector position, Vector offset, float sensorSize, float fieldOfView,
                   float viewDistance, float zoom, float rotation) {
@@ -80,11 +84,11 @@ public class Camera {
         this.offset = offset;
         this.rotation = rotation;
     }
-    
+
     /**
-     * copies a camera to a new one
+     * Copy constructor for Camera
      *
-     * @param camera camera to copy
+     * @param camera Camera to copy
      */
     public Camera(Camera camera) {
         position = camera.position;
@@ -95,145 +99,152 @@ public class Camera {
         offset = camera.offset;
         rotation = camera.rotation;
     }
-    
+
     /**
-     * get field of view in degrees
+     * Get the field of view in degrees
      *
-     * @return field of view in degrees
+     * @return Field of view in degrees
      */
     public float getFieldOfView() {
         return fieldOfView;
     }
-    
+
     /**
-     * set the camera's field of view
+     * Set the Camera's field of view
      *
-     * @param fieldOfView field of view in degrees
+     * @param fieldOfView Field of view in degrees
+     * @return This Camera
      */
     public Camera setFieldOfView(float fieldOfView) {
         this.fieldOfView = fieldOfView;
         return this;
     }
-    
+
     /**
-     * get the position of the camera in the scene
+     * Get the position of the Camera in the Scene
      *
-     * @return vector position of camera in scene
+     * @return Position of the Camera in the Scene
      */
     public Vector getPosition() {
         return position;
     }
-    
+
     /**
-     * set the camera's position in thew scene
+     * Set the Camera's position in the Scene
      *
-     * @param position new position in scene
+     * @param position Position Vector
+     * @return This Camera
      */
     public Camera setPosition(Vector position) {
         this.position = position;
         return this;
     }
-    
+
     /**
-     * get offset of render center
+     * Get the offset of the render from the center of the window
      *
-     * @return vector render offset of camera
+     * @return Render offset
      */
     public Vector getOffset() {
         return offset;
     }
-    
+
     /**
-     * set the offset from the center of the camera in the render, in pixels
+     * Set the offset of the render from the center of the window
      *
-     * @param offset 2D position vector
+     * @param offset Render offset in pixels
+     * @return This Camera
      */
     public Camera setOffset(Vector offset) {
         this.offset = offset;
         return this;
     }
-    
+
     /**
-     * get sensor size of camera in pixels
+     * Get the sensor size of the Camera in pixels
      *
-     * @return sensor size
+     * @return Sensor size in pixels
      */
     public float getSensorSize() {
         return sensorSize;
     }
-    
+
     /**
-     * set the camera sensor size in pixels
+     * Set the Camera sensor size in pixels
      *
-     * @param sensorSize new sensor size
+     * @param sensorSize New sensor size
+     * @return This Camera
      */
     public Camera setSensorSize(float sensorSize) {
         this.sensorSize = sensorSize;
         return this;
     }
-    
+
     /**
-     * get the view distance for the camera
+     * Get the view distance for the Camera
      *
-     * @return camera view distance
+     * @return View distance
      */
     public float getViewDistance() {
         return viewDistance;
     }
-    
+
     /**
-     * set how far away the camera is able to view entities
+     * Set the view distance for the Camera
      *
-     * @param viewDistance new view distance for camera
+     * @param viewDistance New view distance
+     * @return This Camera
      */
     public Camera setViewDistance(float viewDistance) {
         this.viewDistance = viewDistance;
         return this;
     }
-    
+
     /**
-     * get the zoom for the camera
+     * Get the zoom for the Camera
      *
-     * @return camera zoom
+     * @return Zoom
      */
     public float getZoom() {
         return zoom;
     }
-    
+
     /**
-     * set the zoom for the camera
+     * Set the zoom for the Camera
      *
-     * @param zoom camera zoom
+     * @param zoom New zoom
+     * @return This Camera
      */
     public Camera setZoom(float zoom) {
         this.zoom = zoom;
         return this;
     }
-    
+
     /**
-     * get the rotation of the camera
+     * Get the rotation of the Camera
      *
-     * @return rotation of camera in degrees counter-clock-wise
+     * @return Rotation of Camera in degrees counter-clock-wise
      */
     public float getRotation() {
         return rotation;
     }
-    
+
     /**
-     * set the rotation of the camera
+     * Set the rotation of the Camera
      *
-     * @param rotation rotation of camera in degrees counter-clock-wise
+     * @param rotation Rotation of Camera in degrees counter-clock-wise
+     * @return This Camera
      */
     public Camera setRotation(float rotation) {
         this.rotation = rotation;
         return this;
     }
-    
+
     /**
-     * check if a camera is equal to this one
+     * Check if a Camera is equal to this one
      *
-     * @param o object to check
-     * @return true if the object is equal to this camera
+     * @param o Camera to check
+     * @return True if the Camera is equal to this Camera
      */
     @Override
     public boolean equals(Object o) {

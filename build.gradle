@@ -1,8 +1,8 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
-    id 'com.github.johnrengelman.shadow' version '6.0.0'
+    id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 group 'xyz.jeremynoesen.pseudo3d'
@@ -18,8 +18,6 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
-
-dependencies {}
 
 application {
     mainClassName = 'xyz.jeremynoesen.pseudo3d.Pseudo3D'

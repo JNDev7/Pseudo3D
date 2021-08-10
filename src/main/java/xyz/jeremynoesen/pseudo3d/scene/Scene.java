@@ -2,7 +2,7 @@ package xyz.jeremynoesen.pseudo3d.scene;
 
 import javafx.scene.canvas.GraphicsContext;
 import xyz.jeremynoesen.pseudo3d.scene.entity.Entity;
-import xyz.jeremynoesen.pseudo3d.scene.entity.Sprite;
+import xyz.jeremynoesen.pseudo3d.scene.render.Sprite;
 import xyz.jeremynoesen.pseudo3d.scene.render.Camera;
 import xyz.jeremynoesen.pseudo3d.scene.render.Renderer;
 import xyz.jeremynoesen.pseudo3d.scene.util.Vector;
@@ -12,64 +12,56 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 /**
- * scene to place entities, a camera, and code injections to modify them
+ * Scene to place Entities, a Camera, and Runnables in and modify them
  *
  * @author Jeremy Noesen
  */
 public class Scene {
-    
+
     /**
-     * all entities in the scene
+     * All Entities in the Scene
      */
     private final LinkedList<Entity> entities;
-    
+
     /**
-     * camera for the scene to determine where to render from
+     * Camera for the Scene to determine where to render from
      */
     private Camera camera;
-    
+
     /**
-     * background sprite of scene;
+     * Background Sprite of the Scene;
      */
     private Sprite background;
-    
+
     /**
-     * grid scaling for scene, how many pixels represent a meter
+     * Grid scaling for the Scene
+     * <p>
+     * The grid scale is how many pixels represent a meter per axis
      */
     private Vector gridScale;
-    
+
     /**
-     * runnable code fragments to run every time the scene ticks
+     * Runnable code fragments to run every time the Scene ticks
      */
     private final HashSet<Runnable> tickRunnables;
-    
+
     /**
-     * runnable code fragments to run every time the scene renders
+     * Runnable code fragments to run every time the Scene renders
      */
     private final HashSet<Runnable> renderRunnables;
-    
+
     /**
-     * scene renderer
+     * Scene Renderer
      */
     private final Renderer renderer;
-    
+
     /**
-     * last time a tick finished in nanoseconds
-     */
-    private long lastTick;
-    
-    /**
-     * last time a render finished in nanoseconds
-     */
-    private long lastRender;
-    
-    /**
-     * speed modifier for physics and rendering
+     * Speed modifier for physics and rendering
      */
     private float speed;
-    
+
     /**
-     * create a new scene
+     * Create a new default Scene
      */
     public Scene() {
         entities = new LinkedList<>();
@@ -81,14 +73,14 @@ public class Scene {
         renderer = new Renderer(this);
         speed = 1;
     }
-    
+
     /**
-     * create a new scene with pre-defined entities, camera, and background color
+     * Create a new Scene with pre-defined Entities, Camera, background Sprite, and grid scale
      *
-     * @param entities   entities in scene
-     * @param camera     scene camera
-     * @param background background sprite
-     * @param gridScale  scene grid scale
+     * @param entities   Entities to put in the Scene
+     * @param camera     Scene Camera
+     * @param background Background Sprite
+     * @param gridScale  Scene grid scale
      */
     public Scene(LinkedList<Entity> entities, Camera camera, Sprite background, Vector gridScale) {
         this.entities = entities;
@@ -100,11 +92,11 @@ public class Scene {
         this.renderer = new Renderer(this);
         speed = 1;
     }
-    
+
     /**
-     * copy constructor for scene
+     * Copy constructor for Scene
      *
-     * @param scene scene to copy
+     * @param scene Scene to copy
      */
     public Scene(Scene scene) {
         entities = new LinkedList<>();
@@ -117,87 +109,62 @@ public class Scene {
         renderRunnables = scene.renderRunnables;
         gridScale = scene.gridScale;
         renderer = new Renderer(this);
-        lastRender = 0;
-        lastTick = 0;
         speed = scene.speed;
     }
-    
+
     /**
-     * tick all entities in the scene, updating all motion first, and then all collisions take place. also run any tick
-     * injections
+     * Tick all entities in the Scene
+     * <p>
+     * Ticking will do the following in order: run any Runnables, update motion for all Entities, then update collisions
+     * for all Entities
+     *
+     * @param deltaTime How long the previous tick took in seconds
      */
-    public void tick() {
-        float deltaTime = 0;
-        if (lastTick > 0) deltaTime = (System.nanoTime() - lastTick) / 1000000000.0f;
-        //delta time for ticking
-        
+    public void tick(float deltaTime) {
         tickRunnables.forEach(Runnable::run);
-        //run all tick loop injections
-        
-        for (Entity entity : entities) {
-            entity.tickMotion(deltaTime * speed);
-        }
-        //tick all entities motion
-        
-        for (Entity entity : entities) {
-            entity.tickCollisions();
-        }
-        //tick all entities collisions
-        
-        lastTick = System.nanoTime();
+        for (Entity entity : entities) entity.tickMotion(deltaTime * speed);
+        for (Entity entity : entities) entity.tickCollisions();
     }
-    
+
     /**
-     * render this scene to the main canvas, as well as run any render injections
+     * Render this Scene to the main Canvas, as well as run any Runnables
      *
-     * @param graphicsContext graphics context to render to
+     * @param graphicsContext GraphicsContext to render to
+     * @param deltaTime       How long the previous render took in seconds
      */
-    public void render(GraphicsContext graphicsContext) {
-        float deltaTime = 0;
-        if (lastRender > 0) deltaTime = (System.nanoTime() - lastRender) / 1000000000.0f;
-        //delta time for rendering
-        
+    public void render(GraphicsContext graphicsContext, float deltaTime) {
         renderRunnables.forEach(Runnable::run);
-        //run all render loop injections
-        
         renderer.render(graphicsContext, deltaTime * speed);
-        //render frame
-        
-        lastRender = System.nanoTime();
     }
-    
+
     /**
-     * reset the last values for ticking and rendering. should only be called if the game loop is paused
-     */
-    public void clearDeltaTime() {
-        lastRender = 0;
-        lastTick = 0;
-    }
-    
-    /**
-     * get all the entities in this scene. modifying this directly will cause problems
+     * Get all the Entities in this Scene
+     * <p>
+     * Modifying this directly will cause problems
      *
-     * @return list of all entities in this scene
+     * @return List of all Entities in this Scene
      */
     public LinkedList<Entity> getEntities() {
         return entities;
     }
-    
+
     /**
-     * add an entity to this scene
+     * Add an Entity to this Scene
      *
-     * @param entity entity to add
+     * @param entity Entity to add
+     * @return This Scene
      */
     public Scene addEntity(Entity entity) {
         entities.add(entity);
         entity.setScene(this);
         return this;
     }
-    
+
     /**
-     * remove an entity from this scene
+     * Remove an Entity from this Scene
      *
-     * @param entity entity to remove
+     * @param entity Entity to remove
+     * @return This Scene
      */
     public Scene removeEntity(Entity entity) {
         if (entities.contains(entity)) {
@@ -206,146 +173,154 @@ public class Scene {
         }
         return this;
     }
-    
+
     /**
-     * get the camera for this scene
+     * Get the Camera for this Scene
      *
-     * @return scene's camera
+     * @return Scene's Camera
      */
     public Camera getCamera() {
         return camera;
     }
-    
+
     /**
-     * give this scene a different camera
+     * Give this Scene a different Camera
      *
-     * @param camera new camera
+     * @param camera New Camera
+     * @return This Scene
      */
     public Scene setCamera(Camera camera) {
         this.camera = camera;
         return this;
     }
-    
+
     /**
-     * get the background sprite for the scene
+     * Get the background Sprite of the Scene
      *
-     * @return background sprite of scene
+     * @return Background Sprite of Scene
      */
     public Sprite getBackground() {
         return background;
     }
-    
+
     /**
-     * set a sprite to show when the scene is rendered
+     * Set the background Sprite for the Scene
      *
-     * @param background sprite to set as background
+     * @param background Background Sprite
+     * @return This Scene
      */
     public Scene setBackground(Sprite background) {
         this.background = background;
         return this;
     }
-    
+
     /**
-     * add a runnable to the tick loop for this scene
+     * Add a Runnable to the tick loop for this Scene
      *
-     * @param runnable runnable
+     * @param runnable Runnable
+     * @return This Scene
      */
     public Scene addTickRunnable(Runnable runnable) {
         tickRunnables.add(runnable);
         return this;
     }
-    
+
     /**
-     * remove a runnable from the tick loop for the scene
+     * Remove a Runnable from the tick loop for the Scene
      *
-     * @param runnable runnable
+     * @param runnable Runnable
+     * @return This Scene
      */
     public Scene removeTickRunnable(Runnable runnable) {
         tickRunnables.remove(runnable);
         return this;
     }
-    
+
     /**
-     * get all tick runnables for the scene
+     * Get all tick Runnables for the Scene
      *
-     * @return all tick runnables for the scene
+     * @return All tick Runnables for the Scene
      */
     public HashSet<Runnable> getTickRunnables() {
         return tickRunnables;
     }
-    
+
     /**
-     * add a runnable to the render loop for this scene
+     * Add a Runnable to the render loop for this Scene
      *
-     * @param runnable runnable
+     * @param runnable Runnable
+     * @return This Scene
      */
-    public Scene addRenderRunnables(Runnable runnable) {
+    public Scene addRenderRunnable(Runnable runnable) {
         renderRunnables.add(runnable);
         return this;
     }
-    
+
     /**
-     * remove a runnable from the render loop for the scene
+     * Remove a Runnable from the render loop for the Scene
      *
-     * @param runnable runnable
+     * @param runnable Runnable
+     * @return This Scene
      */
-    public Scene removeRenderRunnables(Runnable runnable) {
+    public Scene removeRenderRunnable(Runnable runnable) {
         renderRunnables.remove(runnable);
         return this;
     }
-    
+
     /**
-     * get all render runnables for the scene
+     * Get all render Runnables for the Scene
      *
-     * @return all render runnables for the scene
+     * @return All render Runnables for the Scene
      */
     public HashSet<Runnable> getRenderRunnables() {
         return renderRunnables;
     }
-    
+
     /**
-     * get the scene grid scale
+     * Get the Scene grid scale
      *
-     * @return grid scale for the scene
+     * @return Grid scale for the Scene
      */
     public Vector getGridScale() {
         return gridScale;
     }
-    
+
     /**
-     * set a new grid scale for the scene
+     * Set a new grid scale for the Scene
      *
-     * @param gridScale vector scales
+     * @param gridScale Grid scales
+     * @return This Scene
      */
     public Scene setGridScale(Vector gridScale) {
         this.gridScale = gridScale;
         return this;
     }
-    
+
     /**
-     * get the speed of the scene
+     * Get the speed modifier of the Scene
      *
-     * @return speed modifier value
+     * @return Speed modifier
      */
     public float getSpeed() {
         return speed;
     }
-    
+
     /**
-     * set the speed modifier for the scene
+     * Set the speed modifier for the Scene
      *
-     * @param speed speed modifier value
+     * @param speed Speed modifier
+     * @return This Scene
      */
     public Scene setSpeed(float speed) {
         this.speed = speed;
         return this;
     }
-    
+
     /**
-     * check if a scene is identical to this scene
+     * Check if a Scene is identical to this Scene
      *
-     * @param o entity to check
-     * @return true if the scene is equal to this scene
+     * @param o Scene to check
+     * @return True if the Scene is equal to this Scene
      */
     @Override
     public boolean equals(Object o) {

@@ -1,49 +1,44 @@
 package xyz.jeremynoesen.pseudo3d.scene.util;
 
 /**
- * simple box with some checks and mathematical operators
+ * Box and related mathematical operators
  *
  * @author Jeremy Noesen
  */
 public class Box {
-    
+
     /**
-     * sides of box
-     */
-    public enum Side {LEFT, RIGHT, TOP, BOTTOM, BACK, FRONT}
-    
-    /**
-     * width of the box
+     * Width of the Box
      */
     private float width;
-    
+
     /**
-     * height of the box
+     * Height of the Box
      */
     private float height;
-    
+
     /**
-     * depth of the box
+     * Depth of the Box
      */
     private float depth;
-    
+
     /**
-     * minimum point of box
+     * Minimum point of the Box
      */
     private Vector min;
-    
+
     /**
-     * maximum point of box
+     * Maximum point of the Box
      */
     private Vector max;
-    
+
     /**
-     * position of the center of the box
+     * Position of the center of the Box
      */
     private Vector position;
-    
+
     /**
-     * creates a new box with default 0 values
+     * Create a new default Box
      */
     public Box() {
         width = 0;
@@ -53,14 +48,14 @@ public class Box {
         min = new Vector();
         max = new Vector();
     }
-    
+
     /**
-     * create a new 3D box at location with specified width and height and depth
+     * Create a new 3D Box with specified width, height, depth, and location
      *
-     * @param width    width of box
-     * @param height   height of box
-     * @param depth    depth of box
-     * @param position location of the box's center
+     * @param width    Width of the Box
+     * @param height   Height of the Box
+     * @param depth    Depth of the Box
+     * @param position Location of the Box's center
      */
     public Box(float width, float height, float depth, Vector position) {
         this.width = Math.abs(width);
@@ -72,13 +67,13 @@ public class Box {
         max = new Vector(position.getX() + (width / 2.0f),
                 position.getY() + (height / 2.0f), position.getZ() + (depth / 2.0f));
     }
-    
+
     /**
-     * create a new 2D box at location with specified width and height
+     * Create a new 2D Box with specified width, height, and location
      *
-     * @param width    width of box
-     * @param height   height of box
-     * @param position location of the box's center
+     * @param width    Width of the Box
+     * @param height   Height of the Box
+     * @param position Location of the Box's center
      */
     public Box(float width, float height, Vector position) {
         this.width = Math.abs(width);
@@ -90,11 +85,11 @@ public class Box {
         max = new Vector(position.getX() + (width / 2.0f),
                 position.getY() + (height / 2.0f), position.getZ() + (depth / 2.0f));
     }
-    
+
     /**
-     * copy constructor for box
+     * Copy constructor for Box
      *
-     * @param box box to copy
+     * @param box Box to copy
      */
     public Box(Box box) {
         this.width = box.width;
@@ -104,34 +99,64 @@ public class Box {
         this.min = box.min;
         this.max = box.max;
     }
-    
+
     /**
-     * set teh dimensions of the box
+     * Set the dimensions of the Box
      *
-     * @param width  width of box
-     * @param height height of box
-     * @param depth  depth of box
+     * @param dimensions Dimensions of the Box
+     * @return This Box
      */
-    public Box setDimensions(float width, float height, float depth) {
-        setWidth(width);
-        setHeight(height);
-        setDepth(depth);
+    public Box setDimensions(Vector dimensions) {
+        setWidth(dimensions.getX());
+        setHeight(dimensions.getY());
+        setDepth(dimensions.getZ());
         return this;
     }
-    
+
     /**
-     * get the width of the box
+     * Set the dimensions of the Box for a specific Axis
      *
-     * @return width of box
+     * @param axis      Axis to set dimension for
+     * @param dimension Dimension in grid units
+     * @return This Box
+     */
+    public Box setDimensions(Axis axis, float dimension) {
+        switch (axis) {
+            case X -> setWidth(dimension);
+            case Y -> setHeight(dimension);
+            case Z -> setDepth(dimension);
+        }
+        return this;
+    }
+
+    /**
+     * Get the dimensions of the Box for a specific Axis
+     *
+     * @param axis Axis to get dimension for
+     * @return Dimension of the specified Axis
+     */
+    public float getDimensions(Axis axis) {
+        return switch (axis) {
+            case X -> getWidth();
+            case Y -> getHeight();
+            case Z -> getDepth();
+        };
+    }
+
+    /**
+     * Get the width of the Box
+     *
+     * @return Width of the Box
      */
     public float getWidth() {
         return width;
     }
-    
+
     /**
-     * set a new width of the box and recalculate its actual min and max coords in the x axis
+     * Set a new width of the Box and recalculate its min and max in the x axis
      *
-     * @param width width of box
+     * @param width New width of Box
+     * @return This Box
      */
     public Box setWidth(float width) {
         this.width = Math.abs(width);
@@ -139,20 +164,21 @@ public class Box {
         min = min.setX(position.getX() - (width / 2.0f));
         return this;
     }
-    
+
     /**
-     * get the height of the box
+     * Get the height of the Box
      *
-     * @return height of box
+     * @return Height of the Box
      */
     public float getHeight() {
         return height;
     }
-    
+
     /**
-     * set the height of the box and recalculate its actual min and max coords in the y axis
+     * Set a new height of the Box and recalculate its min and max in the y axis
      *
-     * @param height height of box
+     * @param height New height of the Box
+     * @return This Box
      */
     public Box setHeight(float height) {
         this.height = Math.abs(height);
@@ -160,20 +186,21 @@ public class Box {
         min = min.setY(position.getY() - (height / 2.0f));
         return this;
     }
-    
+
     /**
-     * get the depth of the box
+     * Get the depth of the Box
      *
-     * @return depth of box
+     * @return Depth of Box
      */
     public float getDepth() {
         return depth;
     }
-    
+
     /**
-     * set a new depth of the box and recalculate its actual min and max coords in the z axis
+     * Set a new depth of the Box and recalculate its min and max in the z axis
      *
-     * @param depth depth of box
+     * @param depth New depth of the Box
+     * @return This Box
      */
     public Box setDepth(float depth) {
         this.depth = depth;
@@ -181,20 +208,21 @@ public class Box {
         min = min.setZ(position.getZ() - (depth / 2.0f));
         return this;
     }
-    
+
     /**
-     * get a copy of the position vector for the box
+     * Get the position of the Box
      *
-     * @return copy of position
+     * @return Box position
      */
     public Vector getPosition() {
         return position;
     }
-    
+
     /**
-     * set the position of the box and recalculate its actual min and max coords
+     * Set the position of the Box and recalculate its min and max
      *
-     * @param position new position
+     * @param position New position
+     * @return This Box
      */
     public Box setPosition(Vector position) {
         this.position = position;
@@ -204,94 +232,124 @@ public class Box {
                 position.getY() - (height / 2.0f), position.getZ() - (depth / 2.0f));
         return this;
     }
-    
+
     /**
-     * get the minimum location of the box
+     * Get the minimum of the Box
      *
-     * @return minimum location
+     * @return Minimum location
      */
     public Vector getMinimum() {
         return min;
     }
-    
+
     /**
-     * get the maximum location of the box
+     * Get the maximum of the Box
      *
-     * @return maximum location
+     * @return Maximum location
      */
     public Vector getMaximum() {
         return max;
     }
-    
+
     /**
-     * checks if a box overlaps this box
+     * Check if a Box overlaps this Box
      *
-     * @param box box to check for overlaps
-     * @return true if the box overlaps this box
+     * @param box Box to check for overlap
+     * @return True if the Box overlaps this Box
      */
     public boolean overlaps(Box box) {
         return min.getX() <= box.getMaximum().getX() && max.getX() >= box.getMinimum().getX() &&
                 min.getY() <= box.getMaximum().getY() && max.getY() >= box.getMinimum().getY() &&
                 min.getZ() <= box.getMaximum().getZ() && max.getZ() >= box.getMinimum().getZ();
     }
-    
+
     /**
-     * check if a box is inside this box
+     * Check if a Box is inside this Box
      *
-     * @param box box to check
-     * @return true if the box is inside this box
+     * @param box Box to check
+     * @return True if the Box is inside this Box
      */
     public boolean contains(Box box) {
         return min.getX() <= box.getMinimum().getX() && max.getX() >= box.getMaximum().getX() &&
                 min.getY() <= box.getMinimum().getY() && max.getY() >= box.getMaximum().getY() &&
                 min.getZ() <= box.getMinimum().getZ() && max.getZ() >= box.getMaximum().getZ();
     }
-    
+
     /**
-     * check if this box contains a position
+     * Check if this Box contains a position
      *
-     * @param position position to check
-     * @return true of the box contains this position
+     * @param position Position to check
+     * @return True of the Box contains this position
      */
     public boolean contains(Vector position) {
         return min.getX() <= position.getX() && max.getX() >= position.getX() &&
                 min.getY() <= position.getY() && max.getY() >= position.getY() &&
                 min.getZ() <= position.getZ() && max.getZ() >= position.getZ();
     }
-    
+
     /**
-     * get the volume of the box
+     * Get the volume of the Box
      *
-     * @return volume of the box
+     * @return Volume of the Box
      */
     public float getVolume() {
         return width * height * depth;
     }
-    
+
     /**
-     * get the surface area of the box
+     * Get the surface area of the Box
      *
-     * @return surface area of box
+     * @return Surface area of the Box
      */
     public float getSurfaceArea() {
         return (2 * width * height) + (2 * height * depth) + (2 * width * depth);
     }
-    
+
     /**
-     * put the box width, height, depth, and position into a string
+     * Get the face area for a side perpendicular to the specified Axis
      *
-     * @return box in string format
+     * @param axis Axis to get face area for
+     * @return Face area for a side perpendicular to the specified Axis
+     */
+    public float getFaceArea(Axis axis) {
+        return switch (axis) {
+            case X -> height * depth;
+            case Y -> width * depth;
+            case Z -> width * height;
+        };
+    }
+
+    /**
+     * Get the side of the Box based on direction and Axis
+     *
+     * @param axis Axis of motion
+     * @param dir  Direction
+     * @return Side based on direction and Axis
+     */
+    public Side getSide(Axis axis, float dir) {
+        if (dir == 0) return null;
+        return switch (axis) {
+            case X -> dir < 0 ? Side.LEFT : Side.RIGHT;
+            case Y -> dir < 0 ? Side.BOTTOM : Side.TOP;
+            case Z -> dir < 0 ? Side.BACK : Side.FRONT;
+        };
+    }
+
+    /**
+     * Get the Box represented as a formatted String
+     *
+     * @return Box in string format
      */
     @Override
     public String toString() {
         return "[" + width + ", " + height + ", " + depth + ", " + position.toString() + "]";
     }
-    
+
     /**
-     * check if another box has the same width, height, depth, and position as this box
+     * Check if another Box is equal to this Box
      *
-     * @param box box to check for equality
-     * @return true if the two boxes are equal
+     * @param box Box to check for equality
+     * @return True if the two Boxes are equal
      */
     @Override
     public boolean equals(Object box) {

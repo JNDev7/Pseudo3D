@@ -13,79 +13,112 @@ import xyz.jeremynoesen.pseudo3d.input.Keyboard;
 import xyz.jeremynoesen.pseudo3d.input.Mouse;
 
 /**
- * main application for any project using Pseudo3D
+ * Starting point of all functions of Pseudo3D
  *
  * @author Jeremy Noesen
  */
 public class Pseudo3D extends Application {
-    
+
     /**
-     * canvas for root pane
+     * Canvas for root Pane
      */
     private static Canvas canvas;
-    
+
     /**
-     * javafx scene for the stage
+     * JavaFX Scene for the Stage
      */
     private static Scene scene;
-    
+
     /**
-     * active scene to render and tick
+     * Active Pseudo3D Scene to render and tick
      */
     private static xyz.jeremynoesen.pseudo3d.scene.Scene activeScene;
-    
+
     /**
-     * whether the window can be resized
+     * Whether the window can be resized or not
      */
     private static boolean resizable;
-    
+
     /**
-     * title of window
+     * Title of window
      */
     private static String title;
-    
+
     /**
-     * timeline loop for ticking operations
+     * Timeline loop for ticking
      */
     private static final Timeline tickLoop = new Timeline();
-    
+
     /**
-     * timeline loop for rendering
+     * Timeline loop for rendering
      */
     private static final Timeline renderLoop = new Timeline();
-    
+
     /**
-     * launch the instance of the application
-     *
-     * @param width     width of window
-     * @param height    height of window
-     * @param framerate framerate of window (hertz)
-     * @param tickSpeed tick speed for physics (hertz)
-     * @param resizable resizable status
-     * @param title     window title
+     * Delta time for the tick loop
      */
-    public static void launch(int width, int height, int framerate, int tickSpeed, boolean resizable, String title) {
+    private static float tickDeltaTime = 0;
+
+    /**
+     * Delta time for the render loop
+     */
+    private static float renderDeltaTime = 0;
+
+    /**
+     * Previous time a tick finished in nanoseconds
+     */
+    private static long lastTick = 0;
+
+    /**
+     * Previous time a render finished in nanoseconds
+     */
+    private static long lastRender = 0;
+
+    /**
+     * Launch the instance of the Application
+     *
+     * @param width          Width of window
+     * @param height         Height of window
+     * @param framerate      Framerate for rendering in frames per second
+     * @param tickSpeed      Tick speed for physics in hertz
+     * @param fixedDeltaTime Whether the delta time is a fixed value
+     * @param resizable      Resizable status
+     * @param title          Window title
+     */
+    public static void launch(int width, int height, int framerate, int tickSpeed,
+                              boolean fixedDeltaTime, boolean resizable, String title) {
         Pseudo3D.resizable = resizable;
         Pseudo3D.title = title;
-        
-        tickLoop.getKeyFrames().add(new KeyFrame(Duration.millis(1000f / tickSpeed),
-                ae -> activeScene.tick()));
-        renderLoop.getKeyFrames().add(new KeyFrame(Duration.millis(1000f / framerate),
-                ae -> {
-                    canvas.setWidth(scene.getWidth());
-                    canvas.setHeight(scene.getHeight());
-                    activeScene.render(canvas.getGraphicsContext2D());
-                }));
-        
+
+        tickLoop.getKeyFrames().add(new KeyFrame(Duration.millis(1000f / tickSpeed), ae -> {
+            if (!fixedDeltaTime && lastTick > 0) tickDeltaTime = (System.nanoTime() - lastTick) / 1000000000.0f;
+            else if (fixedDeltaTime) tickDeltaTime = 1f / tickSpeed;
+            else tickDeltaTime = 0;
+
+            activeScene.tick(tickDeltaTime);
+
+            lastTick = System.nanoTime();
+        }));
+
+        renderLoop.getKeyFrames().add(new KeyFrame(Duration.millis(1000f / framerate), ae -> {
+            if (!fixedDeltaTime && lastRender > 0) renderDeltaTime = (System.nanoTime() - lastRender) / 1000000000.0f;
+            else if (fixedDeltaTime) renderDeltaTime = 1f / framerate;
+            else renderDeltaTime = 0;
+
+            activeScene.render(canvas.getGraphicsContext2D(), renderDeltaTime);
+
+            lastRender = System.nanoTime();
+        }));
+
         canvas = new Canvas(width, height);
-    
+
         new Thread(Application::launch).start();
     }
-    
+
     /**
-     * start the application
+     * Start the application
      *
-     * @param primaryStage primary stage of application
+     * @param primaryStage Primary Stage of the Application
      */
     @Override
     public void start(Stage primaryStage) {
@@ -99,65 +132,105 @@ public class Pseudo3D extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setOnCloseRequest(e -> System.exit(0));
+        canvas.widthProperty().bind(root.widthProperty());
+        canvas.heightProperty().bind(root.heightProperty());
         canvas.requestFocus();
         tickLoop.setCycleCount(Animation.INDEFINITE);
         renderLoop.setCycleCount(Animation.INDEFINITE);
         setPaused(false);
     }
-    
+
     /**
-     * stop the application
+     * Stop the Application
      *
-     * @throws Exception if stop fails
+     * @throws Exception If stopping fails
      */
     @Override
     public void stop() throws Exception {
         renderLoop.stop();
         tickLoop.stop();
-        activeScene.clearDeltaTime();
+        lastRender = 0;
+        lastTick = 0;
         super.stop();
     }
-    
+
     /**
-     * pause or unpause the game loops
+     * Pause or unpause the game loops
      *
-     * @param paused true to pause
+     * @param paused True to pause
      */
     public static void setPaused(boolean paused) {
         if (paused) {
             renderLoop.pause();
             tickLoop.pause();
-            activeScene.clearDeltaTime();
+            lastRender = 0;
+            lastTick = 0;
         } else {
             renderLoop.play();
             tickLoop.play();
         }
     }
-    
+
     /**
-     * get the main canvas
+     * Get the main Canvas
      *
-     * @return main canvas
+     * @return Main Canvas
      */
     public static Canvas getCanvas() {
         return canvas;
     }
-    
+
     /**
-     * get the active scene
+     * Get the JavaFX Scene the main Canvas is placed on
      *
-     * @return active scene
+     * @return JavaFX Scene the main Canvas is placed on
+     */
+    public static Scene getScene() {
+        return scene;
+    }
+
+    /**
+     * Check if the main window is resizable
+     *
+     * @return True if the main window is resizable
+     */
+    public static boolean isResizable() {
+        return resizable;
+    }
+
+    /**
+     * Get the active Pseudo3D Scene
+     *
+     * @return Active Pseudo3D Scene
      */
     public static xyz.jeremynoesen.pseudo3d.scene.Scene getActiveScene() {
         return activeScene;
     }
-    
+
     /**
-     * set a new scene to be active
+     * Set a new Pseudo3D Scene to be active
      *
-     * @param activeScene pseudo3d scene
+     * @param activeScene Pseudo3D Scene
      */
     public static void setActiveScene(xyz.jeremynoesen.pseudo3d.scene.Scene activeScene) {
         Pseudo3D.activeScene = activeScene;
+    }
+
+    /**
+     * Get the delta time for the previous iteration of the tick loop
+     *
+     * @return Delta time in seconds
+     */
+    public static float getTickDeltaTime() {
+        return tickDeltaTime;
+    }
+
+    /**
+     * Get the delta time for the previous iteration of the render loop
+     *
+     * @return Delta time in seconds
+     */
+    public static float getRenderDeltaTime() {
+        return renderDeltaTime;
     }
 }

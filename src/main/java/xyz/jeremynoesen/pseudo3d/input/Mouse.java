@@ -8,69 +8,70 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * class to keep track of mouse buttons and motions
+ * Class to keep track of mouse clicks and movement
  *
  * @author Jeremy Noesen
  */
 public class Mouse {
-    
+
     /**
-     * set of all buttons pressed
+     * Set of all buttons currently pressed
      */
     private static final Set<MouseButton> pressed = new HashSet<>();
-    
+
     /**
-     * position of pointer on screen
+     * Absolute position of the pointer on the screen
      */
     private static Vector position = new Vector();
-    
+
     /**
-     * get the motion of the scroll wheel. positive values indicate scrolling towards user, while negative values
-     * indicate scrolling away
+     * Get the rotation of the scroll wheel
+     * <p>
+     * Positive values indicate scrolling up, while negative values indicate scrolling down
      */
     private static float wheelRotation = 0;
-    
+
     /**
-     * get a list of all buttons pressed with their button codes
+     * Get a Set of all buttons pressed as MouseButtons
      *
-     * @return set of buttons pressed
+     * @return Set of MouseButtons pressed
      */
     public static Set<MouseButton> getPressed() {
         return pressed;
     }
-    
+
     /**
-     * check if a button is pressed
+     * Check if a MouseButton is pressed
      *
-     * @param button button to check if pressed (MouseEvent.BUTTON)
-     * @return true if the button is pressed
+     * @param button MouseButton to check if pressed
+     * @return True if the MouseButton is pressed
      */
     public static boolean isPressed(MouseButton button) {
         return pressed.contains(button);
     }
-    
+
     /**
-     * get the motion of the scroll wheel with speed and direction
+     * Get the rotation of the scroll wheel with speed and direction
      *
-     * @return motion of the scroll wheel
+     * @return Rotation of the scroll wheel
      */
     public static float getWheelRotation() {
         return wheelRotation;
     }
-    
+
     /**
-     * get the position of the pointer on screen
+     * Get the absolute position of the pointer on the screen
      *
-     * @return position of pointer on screen
+     * @return Absolute position of pointer on the screen
      */
     public static Vector getPosition() {
         return position;
     }
-    
+
     /**
-     * add the event listeners to the main pane of the program to allow this class to work
+     * Add the event listeners to the main Canvas of the program
      *
-     * @param canvas main pane for the program
+     * @param canvas Main Canvas of the program
      */
     public static void initialize(Canvas canvas) {
         canvas.setOnMouseClicked(e -> pressed.add(e.getButton()));

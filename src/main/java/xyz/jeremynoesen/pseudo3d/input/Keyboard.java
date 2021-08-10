@@ -7,40 +7,40 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * class to keep track of key strokes allowing multiple key presses
+ * Class to listen for key strokes, allowing multiple key presses
  *
  * @author Jeremy Noesen
  */
 public class Keyboard {
-    
+
     /**
-     * set of all keys pressed
+     * Set of all keys currently pressed
      */
     private static final Set<KeyCode> pressed = new HashSet<>();
-    
+
     /**
-     * get a list of all keys pressed with their key codes
+     * Get a Set of all keys currently pressed by their key codes
      *
-     * @return set of keys pressed
+     * @return Set of KeyCodes currently pressed
      */
     public static Set<KeyCode> getPressed() {
         return pressed;
     }
-    
+
     /**
-     * check if a key is pressed
+     * Check if a key is pressed
      *
-     * @param key key to check if pressed
-     * @return true if the key is pressed
+     * @param key KeyCode to check if pressed
+     * @return True if the key is pressed
      */
     public static boolean isPressed(KeyCode key) {
         return pressed.contains(key);
     }
-    
+
     /**
-     * add the event listeners to the main pane of the program to allow this class to work
+     * Add the event listeners to the main Canvas of the program
      *
-     * @param canvas main pane for the program
+     * @param canvas Main Canvas of the program
      */
     public static void initialize(Canvas canvas) {
         canvas.setOnKeyPressed(e -> pressed.add(e.getCode()));

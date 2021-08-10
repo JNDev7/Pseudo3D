@@ -1,58 +1,59 @@
 package xyz.jeremynoesen.pseudo3d.scene.entity;
 
 import xyz.jeremynoesen.pseudo3d.scene.Scene;
+import xyz.jeremynoesen.pseudo3d.scene.render.Sprite;
 
 import java.util.Objects;
 
 /**
- * entity to be placed in a scene, includes physics and a sprite
+ * Entity to be placed in a Scene, with Physics and a Sprite
  *
  * @author Jeremy Noesen
  */
 public class Entity extends Physics {
-    
+
     /**
-     * scene the entity is in
+     * Scene the Entity is in
      */
     private Scene scene;
-    
+
     /**
-     * image that represents the entity when rendered
+     * Sprite for the Entity
      */
     private Sprite sprite;
-    
+
     /**
-     * whether the entity is on screen or not
+     * Whether the Entity is on-screen or not
      */
     private boolean onScreen;
-    
+
     /**
-     * whether to allow updating the entity when it is not on-screen
+     * Whether to allow updating the Entity when it is not on-screen
      */
     private boolean updateOffScreen;
-    
+
     /**
-     * speed modifier for physics and rendering
+     * Speed modifier for physics and rendering
      */
     private float speed;
-    
+
     /**
-     * whether the entity is visible and updatable in the scene
+     * Whether the Entity is visible and updatable in the Scene or not
      */
     boolean enabled;
-    
+
     /**
-     * whether the entity is visible in the scene or not
+     * Whether the Entity is visible in the Scene or not
      */
     boolean visible;
-    
+
     /**
-     * whether the entity has physics or not
+     * Whether the Entity has physics or not
      */
     boolean physics;
-    
+
     /**
-     * constructs a new default entity
+     * Create a new default Entity
      */
     public Entity() {
         super();
@@ -65,11 +66,11 @@ public class Entity extends Physics {
         visible = true;
         physics = true;
     }
-    
+
     /**
-     * copy constructor for entities
+     * Copy constructor for Entities
      *
-     * @param entity entity to copy
+     * @param entity Entity to copy
      */
     public Entity(Entity entity) {
         super(entity);
@@ -82,69 +83,75 @@ public class Entity extends Physics {
         this.visible = entity.visible;
         this.physics = entity.physics;
     }
-    
+
     /**
-     * get the sprite assigned to this entity
+     * Get the Sprite of the Entity
      *
-     * @return image sprite of this entity
+     * @return Sprite of the Entity
      */
     public Sprite getSprite() {
         return sprite;
     }
-    
+
     /**
-     * set the sprite for the entity
+     * Set the Sprite for the Entity
      *
-     * @param sprite new image to set as the sprite
+     * @param sprite New Sprite
+     * @return This Entity
      */
     public Entity setSprite(Sprite sprite) {
         this.sprite = sprite;
         return this;
     }
-    
+
     /**
-     * check if the entity is shown on screen. if the entity has no sprite, this will always be false
+     * Check if the Entity is shown on-screen
+     * <p>
+     * If the Entity has no Sprite, this will always be false
      *
-     * @return true if shown on screen
+     * @return True if shown on-screen
      */
     public boolean isOnScreen() {
         return onScreen;
     }
-    
+
     /**
-     * set if the entity is on screen. manually setting this will do nothing, as this value is automatically updated by
-     * the renderer
+     * Set if the Entity is on-screen
+     * <p>
+     * Manually setting this will do nothing, as this value is automatically updated by the Renderer
      *
-     * @param onScreen true when visible on screen
+     * @param onScreen True when visible on-screen
      */
     public void setOnScreen(boolean onScreen) {
         this.onScreen = onScreen;
         setUpdatable(enabled && physics && (onScreen || updateOffScreen || !visible));
     }
-    
+
     /**
-     * get whether the entity can update when not visible on screen
+     * Get whether the Entity can update when not visible on-screen
      *
-     * @return true if can update off screen
+     * @return True if the Entity can update off-screen
      */
     public boolean canUpdateOffScreen() {
         return updateOffScreen;
     }
-    
+
     /**
-     * get whether the entity can update when not visible on screen
+     * Set whether the Entity can update when not visible on-screen
      *
-     * @param updateOffScreen true to allow updating off screen
+     * @param updateOffScreen True to allow updating off-screen
+     * @return This Entity
      */
     public Entity setUpdateOffScreen(boolean updateOffScreen) {
         this.updateOffScreen = updateOffScreen;
         return this;
     }
-    
+
     /**
-     * set the scene the entity is in
+     * Set the Scene the Entity is in
      *
-     * @param scene scene to place entity in
+     * @param scene Scene to place Entity in
+     * @return This Entity
      */
     public Entity setScene(Scene scene) {
         if (scene != null) {
@@ -155,107 +162,112 @@ public class Entity extends Physics {
         this.scene = scene;
         return this;
     }
-    
+
     /**
-     * get the scene the entity is in
+     * Get the Scene the Entity is in
      *
-     * @return scene entity is in
+     * @return Scene Entity is in
      */
     public Scene getScene() {
         return scene;
     }
-    
+
     /**
-     * get the speed modifier of the entity
+     * Get the speed modifier of the Entity
      *
-     * @return speed modifier value
+     * @return Speed modifier value
      */
     public float getSpeed() {
         return speed;
     }
-    
+
     /**
-     * set the speed modifier for the entity
+     * Set the speed modifier for the Entity
      *
-     * @param speed speed modifier value
+     * @param speed New speed modifier value
+     * @return This Entity
      */
     public Entity setSpeed(float speed) {
         this.speed = speed;
         return this;
     }
-    
+
     /**
-     * update the motion of the entity
+     * Update the motion of the Entity
      *
-     * @param deltaTime time elapsed to use in calculation
+     * @param deltaTime Time elapsed of the previous tick
      */
     @Override
     public void tickMotion(float deltaTime) {
         super.tickMotion(deltaTime * speed);
     }
-    
+
     /**
-     * check if the entity is enabled in the scene
+     * Check if the Entity is enabled in the Scene
      *
-     * @return true if enabled
+     * @return True if enabled
      */
     public boolean isEnabled() {
         return enabled;
     }
-    
+
     /**
-     * set the entity to be visible in the scene and updatable in physics
+     * Set the Entity to be visible in the Scene and updatable in Physics
      *
-     * @param enabled true to enable entity in scene
+     * @param enabled True to enable Entity in Scene
+     * @return This Entity
      */
     public Entity setEnabled(boolean enabled) {
         this.enabled = enabled;
         if (!enabled) setUpdatable(false);
         return this;
     }
-    
+
     /**
-     * check if the entity is visible in rendering
+     * Check if the Entity is visible in rendering
      *
-     * @return true if visible
+     * @return True if visible
      */
     public boolean isVisible() {
         return visible;
     }
-    
+
     /**
-     * set the entity to be visible in rendering
+     * Set the Entity to be visible in rendering
+     *
+     * @return This Entity
      */
     public Entity setVisible(boolean visible) {
         this.visible = visible;
         return this;
     }
-    
+
     /**
-     * check if the entity has physics enabled
+     * Check if the Entity has physics enabled
      *
-     * @return true if entity has physics
+     * @return True if Entity has physics
      */
     public boolean hasPhysics() {
         return physics;
     }
-    
+
     /**
-     * set the entity to have physics or not
+     * Set the Entity to have physics or not
      *
-     * @param enabled true to enable physics
+     * @param enabled True to enable physics
+     * @return This Entity
      */
     public Entity setPhysics(boolean enabled) {
         this.physics = enabled;
         if (!enabled) setUpdatable(false);
         return this;
     }
-    
+
     /**
-     * check if this entity is identical to another
+     * Check if this Entity is identical to another
      *
-     * @param o entity to check
-     * @return true if this entity is identical to the other entity
+     * @param o Entity to check
+     * @return True if this Entity is identical to the other Entity
      */
     @Override
     public boolean equals(Object o) {
