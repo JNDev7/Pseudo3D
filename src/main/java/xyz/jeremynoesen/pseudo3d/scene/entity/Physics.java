@@ -233,7 +233,7 @@ public abstract class Physics extends Box {
             if (collidesOn(axis)) {
                 float f = 0;
                 int count = 0;
-                Side side = getSide(axis, v);
+                Side side = Side.getSide(axis, v);
                 float stackedMass = calculateStackedMass(v, axis);
 
                 if (side != null && collidesOn(side)) {
@@ -251,7 +251,7 @@ public abstract class Physics extends Box {
                 f = 0;
                 count = 0;
 
-                Side opposite = getSide(axis, -v);
+                Side opposite = Side.getSide(axis, -v);
                 if (opposite != null && collidesOn(opposite)) {
                     for (Physics physics : collidingEntities.get(opposite)) {
                         if (physics.updatable && Math.signum(physics.getVelocity().get(axis)) == Math.signum(v)) {
@@ -286,7 +286,7 @@ public abstract class Physics extends Box {
 
             if (!visited.contains(physics)) {
                 totalMass += physics.mass;
-                Side side = getSide(axis, -velocity);
+                Side side = Side.getSide(axis, -velocity);
                 if (side != null) {
                     for (Physics colliding : physics.getCollidingEntities(side))
                         if (colliding.updatable && colliding.isKinematicOn(axis)) current.add(colliding);
@@ -347,7 +347,7 @@ public abstract class Physics extends Box {
             float v = velocity.get(axis);
 
             if (collidesOn(axis)) {
-                Side side = getSide(axis, v);
+                Side side = Side.getSide(axis, v);
                 if (side != null && collidesOn(side)) {
                     for (Physics physics : collidingEntities.get(side)) {
 
@@ -444,9 +444,9 @@ public abstract class Physics extends Box {
         }
         if (zeros > 1) return;
 
-        Side side = getSide(axis, dir);
+        Side side = Side.getSide(axis, dir);
 
-        if (collidableSides.contains(side) && physics.collidableSides.contains(getSide(axis, -dir))) {
+        if (collidableSides.contains(side) && physics.collidableSides.contains(Side.getSide(axis, -dir))) {
             if (isKinematicOn(axis) && velocity.get(axis) * dir > 0) {
                 if (Math.signum(velocity.get(axis)) == -Math.signum(physics.velocity.get(axis))
                         && !physics.specialCollisions.contains(this)) {
@@ -693,8 +693,8 @@ public abstract class Physics extends Box {
     public Physics setCollidableOn(Axis... axes) {
         collidableSides.clear();
         for (Axis axis : axes) {
-            collidableSides.add(getSide(axis, 1));
-            collidableSides.add(getSide(axis, -1));
+            collidableSides.add(Side.getSide(axis, 1));
+            collidableSides.add(Side.getSide(axis, -1));
         }
         return this;
     }
