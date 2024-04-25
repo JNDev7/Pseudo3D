@@ -1,4 +1,4 @@
-<img src="img/Logo.svg" alt="Logo" title = "Logo" align="right" width="200" height="200" />
+<img src="img/Logo.svg" alt="Logo" title="Logo" align="right" width="72" height="72" />
 
 # Pseudo3D
 
